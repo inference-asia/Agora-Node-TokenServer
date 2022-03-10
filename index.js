@@ -1,8 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const {RtcTokenBuilder, RtcRole, RtmTokenBuilder, RtmRole} = require('agora-access-token');
-
+const cors = require('cors');
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 const APP_ID = process.env.APP_ID;
@@ -94,7 +95,7 @@ const generateRTMToken = (req, resp) => {
 
 const generateRTEToken = (req, resp) => {
   // set response header
-  resp.header('Acess-Control-Allow-Origin', '*');
+  // resp.header('Acess-Control-Allow-Origin', '*');
   // get channel name
   const channelName = req.params.channel;
   if (!channelName) {
@@ -131,7 +132,8 @@ const generateRTEToken = (req, resp) => {
   return resp.json({ 'rtcToken': rtcToken, 'rtmToken': rtmToken });
 }
 
-app.get('/ping', nocache, ping)
+app.use(cors());
+app.get('/ping', nocache, ping);
 app.get('/rtc/:channel/:role/:tokentype/:uid', nocache , generateRTCToken);
 app.get('/rtm/:uid/', nocache , generateRTMToken);
 app.get('/rte/:channel/:role/:tokentype/:uid', nocache , generateRTEToken);
